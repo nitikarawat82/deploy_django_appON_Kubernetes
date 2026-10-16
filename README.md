@@ -10,11 +10,57 @@ In this project, we will build a Docker image, push it to Docker Hub, and make i
 
 ## Project Workflow
 
-**GitHub → Clone Repository → Build Docker Image → Docker Hub Login → Tag Image → Push Image to Docker Hub → Kubernetes Deployment**
+**Create EC2 → SSH Login → Install Required Tools → Clone Repository → Build Docker Image → Docker Hub Login → Tag Image → Push Image to Docker Hub → Kubernetes Deployment**
 
-## Step 1: Clone the GitHub Repository
+## Step 1: Create an EC2 Instance
 
-First, clone the project repository to your EC2 instance.
+First, create an **Ubuntu EC2 instance** in AWS.
+
+Once the instance is running, copy its public IP address and download the key pair used to connect to it.
+
+## Step 2: Connect to EC2 Using SSH
+
+Open your terminal and connect to the EC2 instance:
+
+```bash
+ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
+```
+
+## Step 3: Install Required Tools
+
+Install the tools required for the project:
+
+- Docker
+- kubectl
+- kind
+
+Docker is used to build and run containers, kubectl manages Kubernetes resources, and kind creates a Kubernetes cluster using Docker.
+
+Verify the installation:
+
+```bash
+docker --version
+kubectl version --client
+kind --version
+```
+
+## Step 4: Create a Kubernetes Cluster
+
+Create a Kubernetes cluster using kind:
+
+```bash
+kind create cluster --name django-cluster
+```
+
+Verify that the cluster is running:
+
+```bash
+kubectl get nodes
+```
+
+## Step 5: Clone the GitHub Repository
+
+Clone the Django Notes application repository:
 
 ```bash
 git clone https://github.com/nitikarawat82/deploy_django_appON_Kubernetes.git
@@ -26,148 +72,79 @@ Move into the project directory:
 cd deploy_django_appON_Kubernetes
 ```
 
-Verify the project files:
+Check the project files:
 
 ```bash
 ls
 ```
 
-You should see files such as `Dockerfile`, `manage.py`, `requirements.txt`, and `docker-compose.yml`.
+## Step 6: Build the Docker Image
 
-## Step 2: Build the Docker Image
-
-Before deploying the application on Kubernetes, we need to build a Docker image containing the application and its required dependencies.
-
-Run the following command from the project directory:
+Build the Docker image from the project directory:
 
 ```bash
 docker build -t notes-app-k8s .
 ```
 
-Here:
-
-- `docker build` builds a Docker image.
-- `-t notes-app-k8s` assigns a name to the image.
-- `.` tells Docker to use the current directory as the build context.
-
-Verify that the image was created:
+Verify the image:
 
 ```bash
 docker images
 ```
 
-You should see `notes-app-k8s` in the list of local images.
+## Step 7: Log in to Docker Hub
 
-## Step 3: Create a Docker Hub Access Token
+Create a Personal Access Token from your Docker Hub account settings.
 
-To push the image to Docker Hub, you need to authenticate with your Docker Hub account.
-
-1. Log in to Docker Hub.
-2. Open **Account Settings**.
-3. Navigate to **Personal access tokens**.
-4. Create a new access token with the permissions needed to push images.
-5. Copy and save the token securely.
-
-Do not share your access token or commit it to GitHub.
-
-## Step 4: Log in to Docker Hub from EC2
-
-Run the following command on your EC2 instance:
+Then log in:
 
 ```bash
 docker login -u YOUR_DOCKERHUB_USERNAME
 ```
 
-Replace `YOUR_DOCKERHUB_USERNAME` with your Docker Hub username.
+Enter your Docker Hub access token when prompted.
 
-When prompted for a password, enter your Docker Hub personal access token.
+## Step 8: Tag the Docker Image
 
-For a non-interactive login, you can use:
-
-```bash
-echo "YOUR_DOCKERHUB_TOKEN" | docker login -u YOUR_DOCKERHUB_USERNAME --password-stdin
-```
-
-Avoid saving your token directly in shell history or project files. The interactive login method is preferable for beginners.
-
-## Step 5: Tag the Docker Image
-
-Docker Hub images use a repository name that includes your Docker Hub username.
-
-Tag the local image:
-
-```bash
-docker tag notes-app-k8s YOUR_DOCKERHUB_USERNAME/notes-app-k8s:latest
-```
-
-For example, if your Docker Hub username is `nitikarawat82`:
+Tag the image with your Docker Hub username:
 
 ```bash
 docker tag notes-app-k8s nitikarawat82/notes-app-k8s:latest
 ```
 
-Verify the tagged image:
+Replace `nitikarawat82` if you use a different Docker Hub username.
 
-```bash
-docker images
-```
+## Step 9: Push the Image to Docker Hub
 
-The image should now appear with your Docker Hub username and repository name.
-
-## Step 6: Push the Image to Docker Hub
-
-Push the tagged image:
-
-```bash
-docker push YOUR_DOCKERHUB_USERNAME/notes-app-k8s:latest
-```
-
-For example:
+Push the image:
 
 ```bash
 docker push nitikarawat82/notes-app-k8s:latest
 ```
 
-Docker uploads the image to your Docker Hub repository.
+Verify that the image is available in your Docker Hub repository.
 
-After the push completes, open Docker Hub and verify that the `notes-app-k8s` repository contains the `latest` image tag.
+## Step 10: Deploy the Application on Kubernetes
 
-## Step 7: Why Do We Push the Image to Docker Hub?
+Create the Kubernetes Deployment and Service YAML files using the Docker image pushed to Docker Hub.
 
-The image built in Step 2 exists locally on your EC2 instance. Kubernetes cannot automatically access an image stored only on that machine if its cluster nodes do not have access to it.
+Apply the configuration:
 
-By pushing the image to Docker Hub, we make it available from a registry that Kubernetes nodes can access.
-
-For a public Docker Hub repository, Kubernetes can generally pull the image without registry credentials. For a private repository, you must configure the appropriate image-pull credentials.
-
-Use the image reference in your Kubernetes Deployment YAML:
-
-```yaml
-containers:
-  - name: notes-app
-    image: nitikarawat82/notes-app-k8s:latest
-    ports:
-      - containerPort: 8000
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
 ```
 
-Replace the image name and container port with the values appropriate for your application.
+Verify the deployment:
 
-**Note:** This is only the container section of a Deployment manifest, not a complete Deployment YAML file. The correct container port depends on how your Django application is configured to run.
-
-## Final Workflow Summary
-
-1. Clone the Django application from GitHub.
-2. Build the Docker image named `notes-app-k8s`.
-3. Create a Docker Hub personal access token.
-4. Log in to Docker Hub from EC2.
-5. Tag the local image with your Docker Hub username.
-6. Push the image to Docker Hub.
-7. Reference the image in your Kubernetes Deployment YAML.
+```bash
+kubectl get deployments
+kubectl get pods
+kubectl get services
+```
 
 ## Conclusion
 
-In this project, we prepared a Django Notes application for Kubernetes by building a Docker image and uploading it to Docker Hub.
+In this project, we prepare an AWS EC2 instance, install the required tools, create a Kubernetes cluster, clone the Django application, build a Docker image, and push it to Docker Hub.
 
-This is an important step in the container deployment workflow because Kubernetes needs an accessible container image to create application Pods.
-
-In the next step, we will create Kubernetes Deployment and Service YAML files, deploy the application, and verify that the Notes application is running.
+Finally, we use the image to deploy the Django Notes application on Kubernetes.
