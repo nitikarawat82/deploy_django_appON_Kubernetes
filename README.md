@@ -109,7 +109,7 @@ Enter your Docker Hub access token when prompted.
 Tag the image with your Docker Hub username:
 
 ```bash
-docker tag notes-app-k8s nitikadevops/notes-app-k8s:latest
+docker tag notes-app-k8s nitikadevops/notes-app-k8s:latesttag
 ```
 
 Replace `nitikadevops` if you use a different Docker Hub username and replace `notes-app-k8s` with your docker hub repo name.
