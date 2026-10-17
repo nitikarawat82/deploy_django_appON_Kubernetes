@@ -155,6 +155,12 @@ Step 12. securit y goruop, add port 8000
 
 <img width="1742" height="212" alt="image" src="https://github.com/user-attachments/assets/0d9592f7-4ded-4020-8253-54e10f929c6a" />
 
+# working
+
+<img width="983" height="837" alt="image" src="https://github.com/user-attachments/assets/23525c5f-e597-4270-ab0f-341d9ce00905" />
+
+
+<img width="1108" height="887" alt="image" src="https://github.com/user-attachments/assets/6fe375c4-2a3f-41e0-843e-b516cf0c7931" />
 
 ## Conclusion
 
