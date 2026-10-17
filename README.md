@@ -111,6 +111,8 @@ Tag the image with your Docker Hub username:
 ```bash
 docker tag notes-app-k8s nitikadevops/notes-app-k8s:latesttag
 ```
+<img width="1730" height="710" alt="image" src="https://github.com/user-attachments/assets/3a22aa6a-b286-41e0-b51b-e7ae33ba867c" />
+
 
 Replace `nitikadevops` if you use a different Docker Hub username and replace `notes-app-k8s` with your docker hub repo name.
 
