@@ -144,6 +144,7 @@ kubectl get deployments
 kubectl get pods
 kubectl get services
 ```
+<img width="1032" height="95" alt="image" src="https://github.com/user-attachments/assets/a92af09b-72cd-4164-8fb7-a91117a6fe5a" />
 
 Step 11. Expose:
 ```bash
