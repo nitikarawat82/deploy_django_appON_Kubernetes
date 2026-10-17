@@ -109,17 +109,17 @@ Enter your Docker Hub access token when prompted.
 Tag the image with your Docker Hub username:
 
 ```bash
-docker tag notes-app-k8s nitikarawat82/notes-app-k8s:latest
+docker tag notes-app-k8s nitikadevops/notes-app-k8s:latest
 ```
 
-Replace `nitikarawat82` if you use a different Docker Hub username.
+Replace `nitikadevops` if you use a different Docker Hub username and replace `notes-app-k8s` with your docker hub repo name.
 
 ## Step 9: Push the Image to Docker Hub
 
 Push the image:
 
 ```bash
-docker push nitikarawat82/notes-app-k8s:latest
+docker push nitikadevops/notes-app-k8s:latest
 ```
 
 Verify that the image is available in your Docker Hub repository.
@@ -142,6 +142,16 @@ kubectl get deployments
 kubectl get pods
 kubectl get services
 ```
+
+Step 11. Expose:
+```bash
+ kubectl port-forward service/notes-app-service -n notes-app 8000:8000 --address 0.0.0.0
+```
+
+Step 12. securit y goruop, add port 8000 
+
+<img width="1742" height="212" alt="image" src="https://github.com/user-attachments/assets/0d9592f7-4ded-4020-8253-54e10f929c6a" />
+
 
 ## Conclusion
 
